@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { QlementineIconsMoney16 } from "../Elements/QlementineIconsMoney16";
 import { StashUserAvatar } from "../Elements/StashUserAvatar";
@@ -13,11 +13,13 @@ import rectangle57 from "../Elements/rectangle-57.svg";
 import rectangle58 from "../Elements/rectangle-58.svg";
 import ticke12 from "../Elements/ticke-1-2.png";
 import TICKETZ_LOGO from '../Elements/ticketZ.png';
+import { FiHome } from "react-icons/fi";
+import OrganizerHeader from "../information/OrganizerHeader";
+import AdminHeader from "../information/AdminHeader";
 
-export const MyEventsPage = () => {
+export const MyEventsPage = ({ isAdmin = false }) => {
    const navigate = useNavigate();
   
-   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // const handleContinueClick = () => {
   //   navigate('/su-kien-cua-toi');
   // };
@@ -28,7 +30,7 @@ export const MyEventsPage = () => {
      {/* Sidebar và Header */}
      
            <div className="absolute top-[29px] left-[306px] w-[203px] [font-family:font-poppins font-extrabold,Helvetica] font-black italic text-[#f94f2f] text-xl text-center tracking-[0] leading-[normal] z-[10]">
-            SỰ KIỆN CỦA TÔI
+            {isAdmin ? "DANH SÁCH SỰ KIỆN" : "SỰ KIỆN CỦA TÔI"}
           </div>
            <div className="absolute top-[72px] left-[267px] w-[1500px] h-[1439px] bg-[#fff8f7]" />
            <div className="absolute top-0 left-0 w-[272px] h-[1511px] bg-[#f94f2f]" />
@@ -57,115 +59,89 @@ export const MyEventsPage = () => {
 
       {/* Logo và Sidebar */}
       <div className="absolute top-2 left-[5px] w-[63px] h-[63px]">
-              <img
-                className="absolute top-0 left-0 w-[63px] h-[63px] object-contain" // <-- Điều chỉnh lại class
-                alt="ticketZ Logo"
-                src={TICKETZ_LOGO}
-              />
-            </div>
+        <img
+          className="absolute top-0 left-0 w-[63px] h-[63px] object-contain" // <-- Điều chỉnh lại class
+          alt="ticketZ Logo"
+          src={TICKETZ_LOGO}
+        />
+      </div>
       
-            <div 
-              onClick={() => navigate('/su-kien-cua-toi')}
-              className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px]">
-              Organizer <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center
-            </div>
+      <div 
+        onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/su-kien-cua-toi')} 
+        className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px] cursor-pointer">
+        {isAdmin ? "Admin" : "Organizer"} <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center
+      </div>
       
             
 
-      {/* Header */}
-      <div className="absolute top-0 left-[272px] w-[1500px] h-20 flex gap-[11px] bg-white shadow-[0px_4px_4px_#00000040]">
-                  
-        {/* 1. Nút "Tạo sự kiện" (Dùng lại logic cũ) */}
-        <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
+      {/* Header */}                 
+      {!isAdmin && (
+          <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
           <button
-            onClick={() => navigate('/')} 
-            className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
+              onClick={() => navigate('/')} 
+              className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
           >
-            Tạo sự kiện
+              Tạo sự kiện
           </button>
-        </div>
-
-        {/* 2. Bọc Avatar và Dropdown trong một div 'relative' (căn giữa theo chiều dọc) */}
-        {/* Thêm 'items-center' vào flex cha và bỏ 'mt-[17px]' ở đây */}
-        <div className="relative flex items-center h-full "> {/* Căn giữa avatar */}
-          
-          <div className="relative"> {/* Bọc trong 1 div relative nữa */}
-            {/* Thêm onClick cho Avatar để bật/tắt menu */}
-            <div 
-              onClick={() => setIsMenuOpen(prev => !prev)} 
-              className="cursor-pointer mt-[-27px]"
-            >
-              <StashUserAvatar className="w-12 h-12" />
-            </div>
-
-            {/* Menu Dropdown (hiển thị có điều kiện) */}
-            {isMenuOpen && (
-              <div 
-                className="
-                  absolute top-full right-0 mt-2 w-60 
-                  bg-white rounded-lg shadow-xl 
-                  border border-gray-100 z-50 overflow-hidden
-                "
-              >
-                <div className="py-1">
-                  <MenuItem 
-                    text="Vé của tôi" 
-                    onClick={() => navigate('/ve-cua-toi')} 
-                  />
-                  <MenuItem 
-                    text="Sự kiện của tôi" 
-                    onClick={() => navigate('/su-kien-cua-toi')} 
-                  />
-                  <MenuItem 
-                    text="Tài khoản của tôi" 
-                    onClick={() => navigate('/tai-khoan-cua-toi')} 
-                  />
-                  <div className="h-px bg-gray-200 my-1" />
-                  <MenuItem 
-                    text="Đăng xuất" 
-                    onClick={() => { /* Logic đăng xuất */ }} 
-                  />
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-      </div>
+      )}
+
+      {isAdmin ? <AdminHeader /> : <OrganizerHeader />}
 
      
       {/* Sidebar buttons */}
       <div 
-      onClick={() => navigate('/dieu-khoan-BTC')}
-      className="absolute top-[223px] left-[19px] w-60 h-[54px]">
-              <img
-                className="absolute top-0 left-0 w-[238px] h-[54px]"
-                alt="Rectangle"
-                src={rectangle622}
-              />
-      
-              <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
-                Điều khoản BTC
-              </div>
-      
-              <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
-            </div>
-
-      <div className="absolute w-[238px] h-[54px] top-[140px] left-[19px] flex">
+              // 1. Thay đổi vị trí: Nếu là Admin (ReadOnly) thì xuống 223px, User thì 140px
+              className={`absolute w-[238px] h-[54px] left-[19px] flex ${isAdmin ? 'top-[223px]' : 'top-[140px]'}`}
+            >
               <div 
-              onClick={() => navigate('/su-kien-cua-toi')}
-              className="w-60 h-[54px] relative">
+                // 2. Thay đổi đường dẫn: Admin về Dashboard, User về Sự kiện của tôi
+                onClick={() => navigate(isAdmin? '/admin/danh-sach-su-kien' : '/su-kien-cua-toi')}
+                className="w-60 h-[54px] relative cursor-pointer"
+              >
                 <img
                   className="absolute top-0 left-0 w-[238px] h-[54px]"
                   alt="Rectangle"
                   src={rectangle62}
                 />
       
+                {/* 3. Thay đổi tên hiển thị */}
                 <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs text-center tracking-[0] leading-[normal]">
-                  Sự kiện của tôi
+                  {isAdmin? "Danh sách sự kiện" : "Sự kiện của tôi"}
                 </div>
+                
                 <Calendar className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
               </div>
+            </div>
+      
+            <div 
+              // 1. Xử lý vị trí: Admin lên trên (140px), User ở dưới (223px)
+              className={`absolute left-[19px] w-60 h-[54px] ${isAdmin ? 'top-[140px]' : 'top-[223px]'}`}
+            >
+               <div
+                  // 2. Xử lý chuyển trang
+                  onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/dieu-khoan-BTC')}
+                  className="w-full h-full relative cursor-pointer"
+               >
+                  <img
+                    className="absolute top-0 left-0 w-[238px] h-[54px]"
+                    alt="Rectangle"
+                    src={rectangle622}
+                  />
+      
+                  {/* 3. Xử lý Tên nút */}
+                  <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
+                    {isAdmin? "Dashboard" : "Điều khoản BTC"}
+                  </div>
+      
+                  {/* 4. Xử lý Icon: Admin dùng Ngôi nhà, User dùng Money */}
+                  {isAdmin ? (
+                     <FiHome className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1] text-black" />
+                  ) : (
+                     <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
+                  )}
+               </div>
             </div>
 
 
@@ -268,35 +244,10 @@ export const MyEventsPage = () => {
                 />
               </div>
               <div className="absolute top-[150px] left-[300px] p-8">
-                  <EventsPage />
+                  <EventsPage isAdmin={isAdmin} />
               </div>
 
     </div>
-  );
-};
-const MenuItem = ({ text, onClick }) => {
-  // Map tên với emoji
-  const icons = {
-    "Vé của tôi": "🎫",
-    "Sự kiện của tôi": "📅",
-    "Tài khoản của tôi": "👨‍💻",
-    "Đăng xuất": "➔"
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      className="
-        flex items-center gap-3 w-full text-left
-        px-4 py-3 text-sm text-gray-700 
-        hover:bg-gray-100 hover:text-gray-900
-        transition-colors duration-150
-        border-none bg-transparent cursor-pointer
-      "
-    >
-      <span className="text-lg w-6 text-center">{icons[text] || '•'}</span>
-      <span>{text}</span>
-    </button>
   );
 };
 export default MyEventsPage;

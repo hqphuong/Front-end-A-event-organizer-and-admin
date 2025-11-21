@@ -2,7 +2,7 @@ import React, { useContext } from 'react'; // 1. Bỏ useState, thêm useContext
 import { EventContext } from '../../context/EventContext'; // 2. Import "giỏ hàng" Context
 import mailIcon from '../../Elements/mail.png'; // Đảm bảo đường dẫn đúng
 
-const EventSettingsSection = () => {
+const EventSettingsSection = ({ isAdmin = false }) => {
   // 3. Lấy data và hàm cập nhật từ Context
   const { eventData, setEventData } = useContext(EventContext);
 
@@ -53,6 +53,7 @@ const EventSettingsSection = () => {
         <div className="ml-5 bg-white rounded-md p-4 shadow-sm">
           <input
             type="text"
+            disabled={isAdmin}
             // 7. ĐỌC từ Context
             value={customPath}
             // 8. GHI vào Context
@@ -86,6 +87,7 @@ const EventSettingsSection = () => {
         <div className="relative mt-1">
           <textarea
             // 9. ĐỌC từ Context
+            disabled={isAdmin}
             value={message}
             // 10. GHI vào Context
             onChange={handleMessageChange}

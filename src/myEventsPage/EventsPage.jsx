@@ -45,7 +45,7 @@ const ActionButton = ({ icon: Icon, label, onClick }) => {
 /**
  * Component chính của trang
  */
-const EventCard = ({ event }) => {
+const EventCard = ({ event, isAdmin }) => {
   const navigate = useNavigate();
 
   const imageUrl = event.suKienImage || DEFAULT_IMAGE;
@@ -58,14 +58,20 @@ const EventCard = ({ event }) => {
 
   // 1. Hàm cho nút "Tổng quan"
   const handleOverviewClick = () => {
-    // Điều hướng đến trang tổng quan, ví dụ: /event-overview/abc-123-xyz
-    navigate(`/event/${event.id}/overview`);
-  };
+    if (isAdmin) {
+       navigate(`/admin/duyet-su-kien/${event.id}`); 
+    } else {
+       navigate(`/event/${event.id}/overview`);
+    }
+};
 
   // 2. Hàm cho nút "Đơn hàng"
   const handleOrdersClick = () => {
-    // Điều hướng đến trang đơn hàng, ví dụ: /event-orders/abc-123-xyz
-    navigate(`/event/${event.id}/orders`);
+    if (isAdmin) {
+       navigate(`/admin/event-detail/${event.id}/orders`);
+    } else {
+       navigate(`/event/${event.id}/orders`);
+    }
   };
   
   // 3. Hàm cho nút "Chỉnh sửa" (giữ nguyên)
@@ -106,7 +112,7 @@ const EventCard = ({ event }) => {
         {/* --- CẬP NHẬT 'onClick' CHO CÁC NÚT --- */}
         <ActionButton 
           icon={FiPieChart} 
-          label="Tổng quan" 
+          label={isAdmin ? "Chi tiết & Duyệt" : "Tổng quan"}
           onClick={handleOverviewClick} // Gán hàm mới
         />
         <ActionButton 
@@ -114,11 +120,13 @@ const EventCard = ({ event }) => {
           label="Đơn hàng" 
           onClick={handleOrdersClick} // Gán hàm mới
         />
-        <ActionButton 
-          icon={FiEdit} 
-          label="Chỉnh sửa" 
-          onClick={handleEditClick} // Giữ nguyên
-        />
+        {!isAdmin && (
+            <ActionButton 
+              icon={FiEdit} 
+              label="Chỉnh sửa" 
+              onClick={handleEditClick} 
+            />
+        )}
       </div>
     </div>
   );
@@ -130,7 +138,7 @@ const EventCard = ({ event }) => {
  * COMPONENT CHÍNH CỦA TRANG (EventsPage)
  * ===================================================================
  */
-const EventsPage = () => {
+const EventsPage = ({ isAdmin = false }) => {
   const [allEvents, setAllEvents] = useState([]);
   const [activeTab, setActiveTab] = useState('Chờ duyệt'); 
 
@@ -204,7 +212,11 @@ const EventsPage = () => {
       <div className="flex flex-col items-center">
         {filteredEvents.length > 0 ? (
           filteredEvents.map(event => (
-            <EventCard event={event} key={event.id} />
+            <EventCard 
+                event={event} 
+                key={event.id} 
+                isAdmin={isAdmin} 
+            />
           ))
         ) : (
           <p className="-ml-[70px] text-gray-600">Không có sự kiện nào trong mục này.</p>

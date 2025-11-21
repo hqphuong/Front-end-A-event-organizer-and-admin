@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { QlementineIconsMoney16 } from "../../Elements/QlementineIconsMoney16";
 import { StashUserAvatar } from "../../Elements/StashUserAvatar";
 import { Calendar } from "../../Elements/Calendar";
@@ -20,10 +20,11 @@ import rectangle58 from "../../Elements/rectangle-58.svg";
 import rectangle622 from "../../Elements/rectangle-62.png";
 import rectangle62 from "../../Elements/rectangle-62.png";
 import ticke12 from "../../Elements/ticke-1-2.png";
-
+import { FiHome } from "react-icons/fi";
 // import dữ liệu mẫu 
 import { defaultEvents } from '../../context/mockEventData.js';
-
+import OrganizerHeader from "../../information/OrganizerHeader";
+import AdminHeader from "../../information/AdminHeader";
 
 const formatDateToPicker = (dateString) => {
   if (!dateString) return '';
@@ -48,13 +49,13 @@ const formatPickerToDate = (dateString) => {
   return ''; // Trả về rỗng nếu định dạng sai
 };
 
-export const EventPage1 = () => {
+export const EventPage1 = ({ isAdmin = false }) => {
   const navigate = useNavigate();
   const { eventData, setEventData } = useContext(EventContext);
   const { eventId } = useParams();
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  
+  
   // 2. Logic tải dữ liệu sự kiện khi trang được mở
 useEffect(() => {
     if (eventId) {
@@ -122,10 +123,15 @@ useEffect(() => {
 
   const handleContinueClick = () => {
     // Phải kiểm tra xem đang ở chế độ "edit" hay "create"
-    if (eventId) {
-      navigate(`/event-edit/${eventId}/buoc-2`);
-    } else {
-      navigate('/tao-su-kien/buoc-2');
+    if (isAdmin) {
+        navigate(`/admin/duyet-su-kien/${eventId}/buoc-2`);
+    }
+    else {
+        if (eventId) {
+        navigate(`/event-edit/${eventId}/buoc-2`);
+      } else {
+        navigate('/tao-su-kien/buoc-2');
+      }
     }
   };
   
@@ -262,7 +268,7 @@ useEffect(() => {
         src={rectangle55}
       />
 
-    {/* Nút Tiếp Tục (Vẫn ở đây) */}
+    {/* Nút Tiếp Tục */}
     <div 
       className="absolute top-[85px] left-[1320px] w-[102px] h-[45px] cursor-pointer"
       onClick={handleContinueClick}
@@ -289,42 +295,64 @@ useEffect(() => {
 
       {/* Sidebar Title */}
       <div 
-      onClick={() => navigate('/su-kien-cua-toi')}
-      className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px]">
-        Organizer <br />
+        onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/su-kien-cua-toi')} 
+        className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px] cursor-pointer">
+        {isAdmin ? "Admin" : "Organizer"} <br />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center
       </div>
 
       {/* Sidebar Menu */}
-      <div className="absolute w-[238px] h-[54px] top-[140px] left-[19px] flex">
+      <div 
+        // 1. Thay đổi vị trí: Nếu là Admin (ReadOnly) thì xuống 223px, User thì 140px
+        className={`absolute w-[238px] h-[54px] left-[19px] flex ${isAdmin ? 'top-[223px]' : 'top-[140px]'}`}
+      >
         <div 
-        onClick={() => navigate('/su-kien-cua-toi')}
-        className="w-60 h-[54px] relative">
+          // 2. Thay đổi đường dẫn: Admin về Dashboard, User về Sự kiện của tôi
+          onClick={() => navigate(isAdmin? '/admin/danh-sach-su-kien' : '/su-kien-cua-toi')}
+          className="w-60 h-[54px] relative cursor-pointer"
+        >
           <img
             className="absolute top-0 left-0 w-[238px] h-[54px]"
             alt="Rectangle"
             src={rectangle62}
           />
 
+          {/* 3. Thay đổi tên hiển thị */}
           <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs text-center tracking-[0] leading-[normal]">
-            Sự kiện của tôi
+            {isAdmin? "Danh sách sự kiện" : "Sự kiện của tôi"}
           </div>
+          
           <Calendar className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
         </div>
       </div>
 
-      <div className="absolute top-[223px] left-[19px] w-60 h-[54px]">
-        <img
-          className="absolute top-0 left-0 w-[238px] h-[54px]"
-          alt="Rectangle"
-          src={rectangle622}
-        />
+      <div 
+        // 1. Xử lý vị trí: Admin lên trên (140px), User ở dưới (223px)
+        className={`absolute left-[19px] w-60 h-[54px] ${isAdmin ? 'top-[140px]' : 'top-[223px]'}`}
+      >
+         <div
+            // 2. Xử lý chuyển trang
+            onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/dieu-khoan-BTC')}
+            className="w-full h-full relative cursor-pointer"
+         >
+            <img
+              className="absolute top-0 left-0 w-[238px] h-[54px]"
+              alt="Rectangle"
+              src={rectangle622}
+            />
 
-        <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
-          Điều khoản BTC
-        </div>
+            {/* 3. Xử lý Tên nút */}
+            <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
+              {isAdmin? "Dashboard" : "Điều khoản BTC"}
+            </div>
 
-        <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
+            {/* 4. Xử lý Icon: Admin dùng Ngôi nhà, User dùng Money */}
+            {isAdmin ? (
+               <FiHome className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1] text-black" />
+            ) : (
+               <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
+            )}
+         </div>
       </div>
 
       {/* Thanh Bước (Step bar) */}
@@ -405,7 +433,7 @@ useEffect(() => {
 
     <div className="absolute top-[198px] left-[366px] w-[211px] h-[290px]">
       <label 
-        htmlFor="su-kien-upload" 
+        htmlFor={!isAdmin ? "su-kien-upload" : undefined}
         className="absolute -top-px -left-px w-[211px] h-[292px] bg-white rounded-[10px] border border-dashed border-[#f7ad99] cursor-pointer flex items-center justify-center overflow-hidden"
       >
         {suKienPreview ? (
@@ -419,6 +447,7 @@ useEffect(() => {
       <input 
         id="su-kien-upload"
         type="file" 
+        disabled={isAdmin}
         accept="image/*" 
         onChange={handleSuKienChange} 
         className="hidden" 
@@ -431,7 +460,7 @@ useEffect(() => {
       transition-all duration-300 ease-in-out
     `}>
       <label 
-        htmlFor="logo-upload"
+        htmlFor={!isAdmin ? "logo-upload" : undefined}
         className="w-[174px] h-[190px] border-[#f7ad99] absolute -top-px -left-px bg-white rounded-[10px] border border-dashed cursor-pointer flex items-center justify-center overflow-hidden"
       >
         {logoPreview ? (
@@ -445,6 +474,7 @@ useEffect(() => {
       <input 
         id="logo-upload"
         type="file"
+        disabled={isAdmin}
         accept="image/*"
         onChange={handleLogoChange} 
         className="hidden"
@@ -453,7 +483,7 @@ useEffect(() => {
 
     <div className="absolute top-[198px] left-[604px] w-[747px] h-[290px]">
       <label 
-        htmlFor="banner-upload"
+        htmlFor={!isAdmin ? "banner-upload" : undefined}
         className="w-[747px] h-[292px] border-[#fad9d0] absolute -top-px -left-px bg-white rounded-[10px] border border-dashed cursor-pointer flex items-center justify-center overflow-hidden"
       >
         {bannerPreview ? (
@@ -467,6 +497,7 @@ useEffect(() => {
       <input 
         id="banner-upload"
         type="file"
+        disabled={isAdmin}
         accept="image/*"
         onChange={handleBannerChange}
         className="hidden"
@@ -563,6 +594,7 @@ useEffect(() => {
       transition-all duration-300 ease-in-out
     `}>
       <textarea 
+        disabled={isAdmin}
         className="w-full h-full border-none focus:ring-0 outline-none resize-none [font-family:'Montserrat-Regular',Helvetica] text-sm"
         placeholder="Nhập Giới thiệu, Chi tiết, và Điều khoản sự kiện tại đây..."
       />
@@ -571,6 +603,7 @@ useEffect(() => {
       {/* Input "Ngày tổ chức" NẰM NGOÀI điều kiện, luôn hiển thị */}
       <input
         type="date" 
+        disabled={isAdmin}
         value={formatDateToPicker(eventData.eventDate) || ''} 
         onChange={(e) => {
           const newDate = formatPickerToDate(e.target.value);
@@ -629,6 +662,7 @@ useEffect(() => {
           {/* Input Tỉnh / Thành */}
           <input
             type="text"
+            disabled={isAdmin}
             value={eventData.province || ''}
             onChange={(e) => setEventData({ ...eventData, province: e.target.value })}
             placeholder="Tỉnh / Thành"
@@ -638,6 +672,7 @@ useEffect(() => {
           {/* Input Quận / Huyện */}
           <input
             type="text"
+            disabled={isAdmin}
             value={eventData.district || ''}
             onChange={(e) => setEventData({ ...eventData, district: e.target.value })}
             placeholder="Quận / Huyện"
@@ -647,6 +682,7 @@ useEffect(() => {
           {/* Input Số nhà, đường */}
           <input
             type="text"
+            disabled={isAdmin}
             value={eventData.address || ''}
             onChange={(e) => setEventData({ ...eventData, address: e.target.value })}
             placeholder="Số nhà, đường"
@@ -656,6 +692,7 @@ useEffect(() => {
           {/* Input Phường / Xã */}
           <input
             type="text"
+            disabled={isAdmin}
             value={eventData.ward || ''}
             onChange={(e) => setEventData({ ...eventData, ward: e.target.value })}
             placeholder="Phường / Xã"
@@ -666,6 +703,7 @@ useEffect(() => {
       
       <input
         type="text"
+        disabled={isAdmin}
         value={eventData.eventName || ''}
         onChange={(e) => setEventData({ ...eventData, eventName: e.target.value })}
         placeholder="Tên sự kiện"
@@ -674,6 +712,7 @@ useEffect(() => {
       
       <input
         type="text"
+        disabled={isAdmin}
         value={eventData.organizerName || ''}
         onChange={(e) => setEventData({ ...eventData, organizerName: e.target.value })}
         placeholder="Tên BTC"
@@ -686,6 +725,7 @@ useEffect(() => {
       />
       <input
         type="text"
+        disabled={isAdmin}
         value={eventData.description || ''}
         onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
         placeholder="Thông tin BTC"
@@ -702,8 +742,11 @@ useEffect(() => {
       <div className="absolute top-[646px] left-[542px] w-5 h-5 bg-white rounded-[10px]" />
 
       <div 
-          className="absolute top-[646px] left-[366px] flex items-center cursor-pointer"
-          onClick={() => setEventData({ ...eventData, eventType: 'offline' })}
+          className={`
+             absolute top-[646px] left-[366px] flex items-center
+             ${isAdmin ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} 
+          `}
+          onClick={() => !isAdmin && setEventData({ ...eventData, eventType: 'offline' })}
       >
           {/* Vòng tròn radio */}
           <div className="w-5 h-5 flex items-center justify-center bg-white rounded-full">
@@ -721,8 +764,11 @@ useEffect(() => {
       </div>
 
       <div 
-          className="absolute top-[646px] left-[542px] flex items-center cursor-pointer"
-          onClick={() => setEventData({ ...eventData, eventType: 'online' })}
+          className={`
+             absolute top-[646px] left-[542px] flex items-center
+             ${isAdmin ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} 
+          `}
+          onClick={() => !isAdmin && setEventData({ ...eventData, eventType: 'online' })}
       >
           {/* Vòng tròn radio */}
           <div className="w-5 h-5 flex items-center justify-center bg-white rounded-full">
@@ -748,91 +794,19 @@ useEffect(() => {
       </div>
 
       {/* Khối div bên ngoài bị lồng đã bị xóa */}
-      <div className="absolute top-0 left-[272px] w-[1500px] h-20 flex gap-[11px] bg-white shadow-[0px_4px_4px_#00000040]">
-      
-        {/* 1. Nút "Tạo sự kiện" (Dùng lại logic cũ) */}
-        <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
+      {!isAdmin && (
+          <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
           <button
-            onClick={() => navigate('/')} 
-            className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
+              onClick={() => navigate('/')} 
+              className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
           >
-            Tạo sự kiện
+              Tạo sự kiện
           </button>
-        </div>
-
-        {/* 2. Bọc Avatar và Dropdown trong một div 'relative' (căn giữa theo chiều dọc) */}
-        {/* Thêm 'items-center' vào flex cha và bỏ 'mt-[17px]' ở đây */}
-        <div className="relative flex items-center h-full "> {/* Căn giữa avatar */}
-          
-          <div className="relative"> {/* Bọc trong 1 div relative nữa */}
-            {/* Thêm onClick cho Avatar để bật/tắt menu */}
-            <div 
-              onClick={() => setIsMenuOpen(prev => !prev)} 
-              className="cursor-pointer mt-[-27px]"
-            >
-              <StashUserAvatar className="w-12 h-12" />
-            </div>
-
-            {/* Menu Dropdown (hiển thị có điều kiện) */}
-            {isMenuOpen && (
-              <div 
-                className="
-                  absolute top-full right-0 mt-2 w-60 
-                  bg-white rounded-lg shadow-xl 
-                  border border-gray-100 z-50 overflow-hidden
-                "
-              >
-                <div className="py-1">
-                  <MenuItem 
-                    text="Vé của tôi" 
-                    onClick={() => navigate('/ve-cua-toi')} 
-                  />
-                  <MenuItem 
-                    text="Sự kiện của tôi" 
-                    onClick={() => navigate('/su-kien-cua-toi')} 
-                  />
-                  <MenuItem 
-                    text="Tài khoản của tôi" 
-                    onClick={() => navigate('/tai-khoan-cua-toi')} 
-                  />
-                  <div className="h-px bg-gray-200 my-1" />
-                  <MenuItem 
-                    text="Đăng xuất" 
-                    onClick={() => { /* Logic đăng xuất */ }} 
-                  />
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-      </div>
+      )}
+
+      {isAdmin ? <AdminHeader /> : <OrganizerHeader />}
     </div>
-  );
-};
-
-const MenuItem = ({ text, onClick }) => {
-  // Map tên với emoji
-  const icons = {
-    "Vé của tôi": "🎫",
-    "Sự kiện của tôi": "📅",
-    "Tài khoản của tôi": "👨‍💻",
-    "Đăng xuất": "➔"
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      className="
-        flex items-center gap-3 w-full text-left
-        px-4 py-3 text-sm text-gray-700 
-        hover:bg-gray-100 hover:text-gray-900
-        transition-colors duration-150
-        border-none bg-transparent cursor-pointer
-      "
-    >
-      <span className="text-lg w-6 text-center">{icons[text] || '•'}</span>
-      <span>{text}</span>
-    </button>
   );
 };
 export default EventPage1;

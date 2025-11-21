@@ -1,8 +1,7 @@
-import React, { useContext, useState } from 'react'; 
+import React, { useContext} from 'react'; 
 import { EventContext } from '../../context/EventContext'; // 2. Import "giỏ hàng" Context
 import { useNavigate } from 'react-router-dom';
 import { QlementineIconsMoney16 } from "../../Elements/QlementineIconsMoney16";
-import { StashUserAvatar } from "../../Elements/StashUserAvatar";
 import { Calendar } from "../../Elements/Calendar";
 import PaymentForm from "./PaymentForm";
 import { v4 as uuidv4 } from 'uuid';
@@ -17,13 +16,15 @@ import rectangle57 from "../../Elements/rectangle-57.svg";
 import rectangle58 from "../../Elements/rectangle-58.svg";
 import ticke12 from "../../Elements/ticke-1-2.png";
 import TICKETZ_LOGO from '../../Elements/ticketZ.png';
+import OrganizerHeader from "../../information/OrganizerHeader";
+import AdminHeader from "../../information/AdminHeader";
+import { FiHome } from "react-icons/fi";
 
-export const EventPage4 = () => {
+export const EventPage4 = ({ isAdmin = false }) => {
   const navigate = useNavigate();
   const { eventData, setEventData } = useContext(EventContext);
 
   
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 
 
@@ -63,7 +64,47 @@ export const EventPage4 = () => {
     setEventData({});
 
     // 5. Điều hướng về trang "Sự kiện của tôi"
+    
     navigate('/su-kien-cua-toi');
+  };
+
+
+  // Duyệt / Hủy của Admin
+  const handleAdminAction = (action) => {
+    // 1. Lấy danh sách hiện tại từ localStorage
+    let storedEvents = JSON.parse(localStorage.getItem('myEvents')) || [];
+    
+    // 2. Kiểm tra xem sự kiện này đã có trong localStorage chưa
+    const existingIndex = storedEvents.findIndex(e => e.id === eventData.id);
+
+    const newStatus = action === 'approve' ? 'Sắp tới' : 'Bị hủy';
+
+    if (existingIndex !== -1) {
+      // TRƯỜNG HỢP 1: Đã có trong DB -> Cập nhật (Update)
+      console.log("Sự kiện đã có trong DB, đang cập nhật...");
+      storedEvents[existingIndex] = {
+        ...storedEvents[existingIndex],
+        status: newStatus
+      };
+    } else {
+      // TRƯỜNG HỢP 2: Chưa có trong DB (Là Mock Data) -> Thêm mới (Insert)
+      console.log("Sự kiện Mock chưa có trong DB, đang thêm mới...");
+      
+      // Tạo bản ghi mới dựa trên dữ liệu hiện tại (eventData)
+      const newEventRecord = {
+        ...eventData,       // Lấy toàn bộ thông tin (ảnh, tên, vé...)
+        status: newStatus   // Ghi đè trạng thái mới
+      };
+      
+      storedEvents.push(newEventRecord);
+    }
+
+    // 3. Lưu ngược lại vào localStorage
+    localStorage.setItem('myEvents', JSON.stringify(storedEvents));
+    
+    // 4. Thông báo và chuyển trang
+    alert(`Đã xử lý thành công! Trạng thái chuyển thành: "${newStatus}"`);
+    navigate('/admin/danh-sach-su-kien'); 
   };
 
   return (
@@ -84,93 +125,68 @@ export const EventPage4 = () => {
       </div> */}
 
       {/* Nút Lưu */}
+      {!isAdmin ? (
+        // --- NÚT CỦA USER ---
         <div 
             className="absolute top-[85px] left-[1320px] w-[102px] h-[45px] cursor-pointer"
-            onClick={handleCompleteClick} // <--- ĐÃ SỬA: Dùng hàm mới
+            onClick={handleCompleteClick}
           >
-        <img className="absolute top-0 -left-1 w-[108px] h-[53px]" alt="Rectangle" src={rectangle21} />
-        <div className="absolute top-[15px] left-[40px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-[#f94f2f] text-xs text-center tracking-[0] leading-[normal]">
-          Lưu
+            <img className="absolute top-0 -left-1 w-[108px] h-[53px]" alt="Rectangle" src={rectangle21} />
+            <div className="absolute top-[15px] left-[40px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-[#f94f2f] text-xs text-center tracking-[0] leading-[normal]">
+              Lưu
+            </div>
         </div>
-      </div>
+      ) : (
+        // --- NÚT CỦA ADMIN ---
+        <div className="absolute top-[85px] left-[1250px] flex gap-3">
+            <button 
+                onClick={() => handleAdminAction('reject')}
+                className="h-11 rounded-lg bg-white border border-red-500 text-red-500 px-4 py-2 font-bold hover:bg-red-50 text-xs transition"
+            >
+                Từ chối ✕
+            </button>
+            <button 
+              
+                onClick={() => handleAdminAction('approve')}
+                className="bg-[#f94f2f] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#d13a1e] text-xs shadow-md transition border-none"
+                // img className="absolute top-0 -left-1 w-[108px] h-[53px]" alt="Rectangle" src={rectangle21}
+            >
+                Duyệt ✓
+            </button>
+        </div>
+      )}
 
       {/* Logo và Sidebar */}
       <div className="absolute top-2 left-[5px] w-[63px] h-[63px]">
-              <img
-                className="absolute top-0 left-0 w-[63px] h-[63px] object-contain" // <-- Điều chỉnh lại class
-                alt="ticketZ Logo"
-                src={TICKETZ_LOGO}
-              />
-            </div>
-      
-            <div 
-              onClick={() => navigate('/su-kien-cua-toi')}
-              className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px]">
-              Organizer <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center
-            </div>
+        <img
+          className="absolute top-0 left-0 w-[63px] h-[63px] object-contain" // <-- Điều chỉnh lại class
+          alt="ticketZ Logo"
+          src={TICKETZ_LOGO}
+        />
+      </div>
+
+      <div 
+        onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/su-kien-cua-toi')} 
+        className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px] cursor-pointer">
+        {isAdmin ? "Admin" : "Organizer"} <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center
+      </div>
       
             
 
       {/* Header */}
-      <div className="absolute top-0 left-[272px] w-[1200px] h-20 flex gap-[11px] bg-white shadow-[0px_4px_4px_#00000040]">
-        {/* 1. Nút "Tạo sự kiện" (Dùng lại logic cũ) */}
-        <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
+      {!isAdmin && (
+          <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
           <button
-            onClick={() => navigate('/')} 
-            className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
+              onClick={() => navigate('/')} 
+              className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
           >
-            Tạo sự kiện
+              Tạo sự kiện
           </button>
-        </div>
-
-        {/* 2. Bọc Avatar và Dropdown trong một div 'relative' (căn giữa theo chiều dọc) */}
-        {/* Thêm 'items-center' vào flex cha và bỏ 'mt-[17px]' ở đây */}
-        <div className="relative flex items-center h-full "> {/* Căn giữa avatar */}
-          
-          <div className="relative"> {/* Bọc trong 1 div relative nữa */}
-            {/* Thêm onClick cho Avatar để bật/tắt menu */}
-            <div 
-              onClick={() => setIsMenuOpen(prev => !prev)} 
-              className="cursor-pointer mt-[-27px]"
-            >
-              <StashUserAvatar className="w-12 h-12" />
-            </div>
-
-            {/* Menu Dropdown (hiển thị có điều kiện) */}
-            {isMenuOpen && (
-              <div 
-                className="
-                  absolute top-full right-0 mt-2 w-60 
-                  bg-white rounded-lg shadow-xl 
-                  border border-gray-100 z-50 overflow-hidden
-                "
-              >
-                <div className="py-1">
-                  <MenuItem 
-                    text="Vé của tôi" 
-                    onClick={() => navigate('/ve-cua-toi')} 
-                  />
-                  <MenuItem 
-                    text="Sự kiện của tôi" 
-                    onClick={() => navigate('/su-kien-cua-toi')} 
-                  />
-                  <MenuItem 
-                    text="Tài khoản của tôi" 
-                    onClick={() => navigate('/tai-khoan-cua-toi')} 
-                  />
-                  <div className="h-px bg-gray-200 my-1" />
-                  <MenuItem 
-                    text="Đăng xuất" 
-                    onClick={() => { /* Logic đăng xuất */ }} 
-                  />
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-      </div>
+      )}
 
+      {isAdmin ? <AdminHeader /> : <OrganizerHeader />}
       {/* Thanh bước */}
       <div className="absolute top-[88px] left-[286px] w-[148px] h-8 flex gap-1 ">
         <div className="w-[34px] h-8 relative">
@@ -230,39 +246,61 @@ export const EventPage4 = () => {
 
      
       {/* Sidebar buttons */}
-      <div className="absolute top-[223px] left-[19px] w-60 h-[54px]">
-              <img
-                className="absolute top-0 left-0 w-[238px] h-[54px]"
-                alt="Rectangle"
-                src={rectangle622}
-              />
-      
-              <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
-                Điều khoản BTC
-              </div>
-      
-              <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
-            </div>
-
-      <div className="absolute w-[238px] h-[54px] top-[140px] left-[19px] flex">
+      <div 
+              // 1. Thay đổi vị trí: Nếu là Admin (ReadOnly) thì xuống 223px, User thì 140px
+              className={`absolute w-[238px] h-[54px] left-[19px] flex ${isAdmin ? 'top-[223px]' : 'top-[140px]'}`}
+            >
               <div 
-              onClick={() => navigate('/su-kien-cua-toi')}
-              className="w-60 h-[54px] relative">
+                // 2. Thay đổi đường dẫn: Admin về Dashboard, User về Sự kiện của tôi
+                onClick={() => navigate(isAdmin? '/admin/danh-sach-su-kien' : '/su-kien-cua-toi')}
+                className="w-60 h-[54px] relative cursor-pointer"
+              >
                 <img
                   className="absolute top-0 left-0 w-[238px] h-[54px]"
                   alt="Rectangle"
                   src={rectangle62}
                 />
       
+                {/* 3. Thay đổi tên hiển thị */}
                 <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs text-center tracking-[0] leading-[normal]">
-                  Sự kiện của tôi
+                  {isAdmin? "Danh sách sự kiện" : "Sự kiện của tôi"}
                 </div>
+                
                 <Calendar className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
               </div>
             </div>
+      
+            <div 
+              // 1. Xử lý vị trí: Admin lên trên (140px), User ở dưới (223px)
+              className={`absolute left-[19px] w-60 h-[54px] ${isAdmin ? 'top-[140px]' : 'top-[223px]'}`}
+            >
+               <div
+                  // 2. Xử lý chuyển trang
+                  onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/dieu-khoan-BTC')}
+                  className="w-full h-full relative cursor-pointer"
+               >
+                  <img
+                    className="absolute top-0 left-0 w-[238px] h-[54px]"
+                    alt="Rectangle"
+                    src={rectangle622}
+                  />
+      
+                  {/* 3. Xử lý Tên nút */}
+                  <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
+                    {isAdmin? "Dashboard" : "Điều khoản BTC"}
+                  </div>
+      
+                  {/* 4. Xử lý Icon: Admin dùng Ngôi nhà, User dùng Money */}
+                  {isAdmin ? (
+                     <FiHome className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1] text-black" />
+                  ) : (
+                     <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
+                  )}
+               </div>
+            </div>
 
         <div className="absolute top-[150px] left-[300px] p-8">
-            <PaymentForm />
+            <PaymentForm isAdmin={isAdmin} />
         </div>
         
         <div className="absolute top-[1511px] left-0 w-[1472px] h-[581px]">

@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useState } from "react";
 import { EventContext } from '../../context/EventContext';
 import { QlementineIconsMoney16 } from "../../Elements/QlementineIconsMoney16";
-import { StashUserAvatar } from "../../Elements/StashUserAvatar";
 import { Calendar } from "../../Elements/Calendar";
 import rectangle7 from "../../Elements/rectangle-7.png";
 import rectangle212 from "../../Elements/rectangle-21-2.png";
@@ -18,6 +17,9 @@ import rectangle57 from "../../Elements/rectangle-57.svg";
 import rectangle58 from "../../Elements/rectangle-58.svg";
 import ticke12 from "../../Elements/ticke-1-2.png";
 import TICKETZ_LOGO from '../../Elements/ticketZ.png';
+import OrganizerHeader from "../../information/OrganizerHeader";
+import AdminHeader from "../../information/AdminHeader";
+import { FiHome } from "react-icons/fi";
 
 const formatToDateTimePicker = (dateTimeString) => {
   if (!dateTimeString || !dateTimeString.includes(' ')) return '';
@@ -54,18 +56,21 @@ const formatFromDateTimePicker = (pickerString) => {
   return `${time} ${day}/${month}/${year}`;
 };
 
-export const EventPage2 = () => {
+export const EventPage2 = ({ isAdmin = false }) => {
   const navigate = useNavigate();
   const { eventData, setEventData } = useContext(EventContext);
   const { eventId } = useParams();
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const handleContinueClick = () => {
-    if (eventId) {
-      navigate(`/event-edit/${eventId}/buoc-3`);
-    } else {
-      navigate('/tao-su-kien/buoc-3');
+    if (isAdmin) {
+        navigate(`/admin/duyet-su-kien/${eventId}/buoc-3`);
+    }
+    else {
+      if (eventId) {
+        navigate(`/event-edit/${eventId}/buoc-3`);
+      } else {
+        navigate('/tao-su-kien/buoc-3');
+      }
     }
   };
   const [editingTicket, setEditingTicket] = useState(null);
@@ -114,82 +119,35 @@ export const EventPage2 = () => {
 
       {/* Logo và Sidebar */}
       <div className="absolute top-2 left-[5px] w-[63px] h-[63px]">
-              <img
-                className="absolute top-0 left-0 w-[63px] h-[63px] object-contain" // <-- Điều chỉnh lại class
-                alt="ticketZ Logo"
-                src={TICKETZ_LOGO}
-              />
-            </div>
-      
-            <div 
-              onClick={() => navigate('/su-kien-cua-toi')}
-              className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px]">
-              Organizer <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center
-            </div>
+        <img
+          className="absolute top-0 left-0 w-[63px] h-[63px] object-contain" // <-- Điều chỉnh lại class
+          alt="ticketZ Logo"
+          src={TICKETZ_LOGO}
+        />
+      </div>
+
+      <div 
+        onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/su-kien-cua-toi')} 
+        className="absolute top-[27px] left-[89px] [font-family:'Moul-Regular',Helvetica] font-normal text-white text-xl text-center tracking-[0] leading-[15px] cursor-pointer">
+        {isAdmin ? "Admin" : "Organizer"} <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center
+      </div>
       
             
 
       {/* Header */}
-      <div className="absolute top-0 left-[272px] w-[1500px] h-20 flex gap-[11px] bg-white shadow-[0px_4px_4px_#00000040]">
-            
-              {/* 1. Nút "Tạo sự kiện" (Dùng lại logic cũ) */}
-              <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
-                <button
-                  onClick={() => navigate('/')} 
-                  className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
-                >
-                  Tạo sự kiện
-                </button>
-              </div>
-      
-              {/* 2. Bọc Avatar và Dropdown trong một div 'relative' (căn giữa theo chiều dọc) */}
-              {/* Thêm 'items-center' vào flex cha và bỏ 'mt-[17px]' ở đây */}
-              <div className="relative flex items-center h-full "> {/* Căn giữa avatar */}
-                
-                <div className="relative"> {/* Bọc trong 1 div relative nữa */}
-                  {/* Thêm onClick cho Avatar để bật/tắt menu */}
-                  <div 
-                    onClick={() => setIsMenuOpen(prev => !prev)} 
-                    className="cursor-pointer mt-[-27px]"
-                  >
-                    <StashUserAvatar className="w-12 h-12" />
-                  </div>
-      
-                  {/* Menu Dropdown (hiển thị có điều kiện) */}
-                  {isMenuOpen && (
-                    <div 
-                      className="
-                        absolute top-full right-0 mt-2 w-60 
-                        bg-white rounded-lg shadow-xl 
-                        border border-gray-100 z-50 overflow-hidden
-                      "
-                    >
-                      <div className="py-1">
-                        <MenuItem 
-                          text="Vé của tôi" 
-                          onClick={() => navigate('/ve-cua-toi')} 
-                        />
-                        <MenuItem 
-                          text="Sự kiện của tôi" 
-                          onClick={() => navigate('/su-kien-cua-toi')} 
-                        />
-                        <MenuItem 
-                          text="Tài khoản của tôi" 
-                          onClick={() => navigate('/tai-khoan-cua-toi')} 
-                        />
-                        <div className="h-px bg-gray-200 my-1" />
-                        <MenuItem 
-                          text="Đăng xuất" 
-                          onClick={() => { /* Logic đăng xuất */ }} 
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+      {!isAdmin && (
+          <div className="mt-[17px] w-[102px] h-[45px] relative ml-[989px]">
+          <button
+              onClick={() => navigate('/')} 
+              className="flex items-center justify-center w-[108px] h-[45px] rounded-full bg-[#FF5331] text-white text-xs font-semibold [font-family:'Montserrat-SemiBold',Helvetica] shadow-[0_4px_8px_rgba(0,0,0,0.25)] border-none outline-none"
+          >
+              Tạo sự kiện
+          </button>
+          </div>
+      )}
 
+      {isAdmin ? <AdminHeader /> : <OrganizerHeader />}
       {/* Thanh bước */}
       <div className="absolute top-[88px] left-[286px] w-[148px] h-8 flex gap-1 ">
         <div className="w-[34px] h-8 relative">
@@ -262,6 +220,7 @@ export const EventPage2 = () => {
       <input
         type="datetime-local" // 1. Đổi type
         // 2. Dùng hàm chuyển đổi mới
+        disabled={isAdmin}
         value={formatToDateTimePicker(eventData.startTime) || ''}
         // 3. Dùng hàm chuyển đổi mới
         onChange={(e) => {
@@ -274,6 +233,7 @@ export const EventPage2 = () => {
       <input
         type="datetime-local" // 1. Đổi type
         // 2. Dùng hàm chuyển đổi mới
+        disabled={isAdmin}
         value={formatToDateTimePicker(eventData.endTime) || ''}
         // 3. Dùng hàm chuyển đổi mới
         onChange={(e) => {
@@ -304,68 +264,97 @@ export const EventPage2 = () => {
         <div className="flex items-center gap-3">
           <span className="cursor-grab">☰</span>
           <span className="font-semibold">{ticket.ticketName || "Chưa đặt tên"}</span>
+          {isAdmin && (
+             <span className="text-sm text-gray-500 ml-4">
+               (Giá: {ticket.ticketPrice} - SL: {ticket.ticketQuantity})
+             </span>
+          )}
         </div>
-        <div className="flex gap-2">
-          <button 
-            className="p-2 bg-white rounded-md hover:bg-gray-300"
-            onClick={() => handleEditClick(ticket)}
-          >
-            <FaEdit />
-          </button>
-          <button 
-            className="p-2 bg-[#F94F2F] rounded-md hover:bg-red-600"
-            onClick={() => handleDeleteTicket(ticket.id)}
-          >
-            <FaTrash className="text-white w-4 h-4" />
-          </button>
-
-
-        </div>
+        {!isAdmin && (
+          <div className="flex gap-2">
+            <button 
+              className="p-2 bg-white rounded-md hover:bg-gray-300"
+              onClick={() => handleEditClick(ticket)}
+            >
+              <FaEdit />
+            </button>
+            <button 
+              className="p-2 bg-[#F94F2F] rounded-md hover:bg-red-600"
+              onClick={() => handleDeleteTicket(ticket.id)}
+            >
+              <FaTrash className="text-white w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     ))}
   </div>
 
   {/* 3. Nút "Tạo vé" - Đã bỏ `absolute` và bọc trong div `justify-center` */}
 <div className="flex justify-center">
-          {/* 5. Truyền state "đang sửa" xuống cho component con */}
-          <TicketCreator 
-            editingTicket={editingTicket}
-            setEditingTicket={setEditingTicket}
-          />
-        </div>
+      {!isAdmin && (
+        <TicketCreator 
+          editingTicket={editingTicket}
+          setEditingTicket={setEditingTicket}
+        />
+      )}
+  </div>
 
 </div>
       {/* Sidebar buttons */}
-      <div className="absolute top-[223px] left-[19px] w-60 h-[54px]">
-              <img
-                className="absolute top-0 left-0 w-[238px] h-[54px]"
-                alt="Rectangle"
-                src={rectangle622}
-              />
-      
-              <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
-                Điều khoản BTC
-              </div>
-      
-              <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
-            </div>
-
-      <div className="absolute w-[238px] h-[54px] top-[140px] left-[19px] flex">
-              <div
-              onClick={() => navigate('/su-kien-cua-toi')}
-               className="w-60 h-[54px] relative">
+      <div 
+              // 1. Thay đổi vị trí: Nếu là Admin (ReadOnly) thì xuống 223px, User thì 140px
+              className={`absolute w-[238px] h-[54px] left-[19px] flex ${isAdmin ? 'top-[223px]' : 'top-[140px]'}`}
+            >
+              <div 
+                // 2. Thay đổi đường dẫn: Admin về Dashboard, User về Sự kiện của tôi
+                onClick={() => navigate(isAdmin? '/admin/danh-sach-su-kien' : '/su-kien-cua-toi')}
+                className="w-60 h-[54px] relative cursor-pointer"
+              >
                 <img
                   className="absolute top-0 left-0 w-[238px] h-[54px]"
                   alt="Rectangle"
                   src={rectangle62}
                 />
       
+                {/* 3. Thay đổi tên hiển thị */}
                 <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs text-center tracking-[0] leading-[normal]">
-                  Sự kiện của tôi
+                  {isAdmin? "Danh sách sự kiện" : "Sự kiện của tôi"}
                 </div>
+                
                 <Calendar className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
               </div>
             </div>
+      
+            <div 
+              // 1. Xử lý vị trí: Admin lên trên (140px), User ở dưới (223px)
+              className={`absolute left-[19px] w-60 h-[54px] ${isAdmin ? 'top-[140px]' : 'top-[223px]'}`}
+            >
+               <div
+                  // 2. Xử lý chuyển trang
+                  onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/dieu-khoan-BTC')}
+                  className="w-full h-full relative cursor-pointer"
+               >
+                  <img
+                    className="absolute top-0 left-0 w-[238px] h-[54px]"
+                    alt="Rectangle"
+                    src={rectangle622}
+                  />
+      
+                  {/* 3. Xử lý Tên nút */}
+                  <div className="absolute top-[19px] left-[47px] [font-family:'Montserrat-SemiBold',Helvetica] font-semibold text-black text-xs tracking-[0] leading-[normal]">
+                    {isAdmin? "Dashboard" : "Điều khoản BTC"}
+                  </div>
+      
+                  {/* 4. Xử lý Icon: Admin dùng Ngôi nhà, User dùng Money */}
+                  {isAdmin ? (
+                     <FiHome className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1] text-black" />
+                  ) : (
+                     <QlementineIconsMoney16 className="!absolute !top-[11px] !left-[9px] !w-8 !h-8 !aspect-[1]" />
+                  )}
+               </div>
+            </div>
+            
         {/* Footer */}
         <div className="absolute top-[1511px] left-0 w-[1472px] h-[581px]">
                 <div className="absolute top-0 left-0 w-[1500px] h-[581px] bg-[#5d5c5c]" />
@@ -466,31 +455,6 @@ export const EventPage2 = () => {
               </div>
     </div>
   
-  );
-};
-const MenuItem = ({ text, onClick }) => {
-  // Map tên với emoji
-  const icons = {
-    "Vé của tôi": "🎫",
-    "Sự kiện của tôi": "📅",
-    "Tài khoản của tôi": "👨‍💻",
-    "Đăng xuất": "➔"
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      className="
-        flex items-center gap-3 w-full text-left
-        px-4 py-3 text-sm text-gray-700 
-        hover:bg-gray-100 hover:text-gray-900
-        transition-colors duration-150
-        border-none bg-transparent cursor-pointer
-      "
-    >
-      <span className="text-lg w-6 text-center">{icons[text] || '•'}</span>
-      <span>{text}</span>
-    </button>
   );
 };
 export default EventPage2;

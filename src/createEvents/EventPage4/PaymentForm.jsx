@@ -3,39 +3,41 @@
 import React, { useContext } from 'react'; // <--- THÊM useContext
 import { EventContext } from '../../context/EventContext'; // <--- THÊM Import Context
 
-/**
- * Component con (helper) để tạo một hàng (label + input)
- */
-const FormRow = ({ label, placeholder, name, value, onChange }) => {
-  return (
-    <div className="flex items-center gap-6 mb-4 ">
-      <label 
-        htmlFor={name}
-        className="inline-block bg-[#ffffff] border border-[#F8AE99] text-[#f94f2f] font-semibold text-sm rounded-full px-6 py-2 w-44 text-center shadow-sm flex-shrink-0"
-      >
-        {label}
-      </label>
-      
-      <input
-        id={name}
-        name={name}
-        type="text"
-        placeholder={placeholder || ''}
-        value={value}
-        onChange={onChange}
-        className="h-[32px] flex-1 bg-white rounded-lg px-4 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f94f2f] border-none"
-      />
-    </div>
-  );
-};
+
 
 /**
  * Component Form chính
  */
-const PaymentForm = () => {
+const PaymentForm = ({ isAdmin = false }) => {
   // Lấy data và hàm set từ Context
   const { eventData, setEventData } = useContext(EventContext);
-
+  
+  /**
+ * Component con (helper) để tạo một hàng (label + input)
+ */
+  const FormRow = ({ label, placeholder, name, value, onChange }) => {
+    return (
+      <div className="flex items-center gap-6 mb-4 ">
+        <label 
+          htmlFor={!isAdmin ? name : undefined}
+          className="inline-block bg-[#ffffff] border border-[#F8AE99] text-[#f94f2f] font-semibold text-sm rounded-full px-6 py-2 w-44 text-center shadow-sm flex-shrink-0"
+        >
+          {label}
+        </label>
+        
+        <input
+          id={name}
+          name={name}
+          type="text"
+          disabled={isAdmin}
+          placeholder={placeholder || ''}
+          value={value}
+          onChange={onChange}
+          className="h-[32px] flex-1 bg-white rounded-lg px-4 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f94f2f] border-none"
+        />
+      </div>
+    );
+  };
   // Lấy thông tin thanh toán từ "giỏ hàng"
   // Nếu chưa có, nó sẽ là một đối tượng rỗng
   const formData = eventData.paymentInfo || {
@@ -81,24 +83,28 @@ const PaymentForm = () => {
           name="accountHolder"
           value={formData.accountHolder}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
         <FormRow 
           label="Số tài khoản"
           name="accountNumber"
           value={formData.accountNumber}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
         <FormRow 
           label="Tên ngân hàng"
           name="bankName"
           value={formData.bankName}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
         <FormRow 
           label="Chi nhánh"
           name="branch"
           value={formData.branch}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
       </div>
 
@@ -114,24 +120,28 @@ const PaymentForm = () => {
           name="businessType"
           value={formData.businessType}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
         <FormRow 
           label="Tên"
           name="companyName"
           value={formData.companyName}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
         <FormRow 
           label="Địa chỉ"
           name="companyAddress"
           value={formData.companyAddress}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
         <FormRow 
           label="Mã số thuế"
           name="taxCode"
           value={formData.taxCode}
           onChange={handleChange}
+          isAdmin={isAdmin}
         />
       </div>
       

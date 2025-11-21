@@ -18,10 +18,13 @@ import OrganizerLayout from './organizerlayout/OrganizerLayout.jsx';
 import BtcTermsPage from './organizerlayout/BtcTermsPage.jsx';
 import VoucherPage from './eventorderpage/VoucherPage.jsx';
 import CreateVoucherPage from './eventorderpage/CreateVoucherPage.jsx';
+import DashBoard from './dashboard/Dashboard.jsx'
+import AdminProfilePage from './information/AdminProfilePage.jsx';
 function App() {
   return (
     <EventFormProvider>
       <Routes>
+      {/* === ROUTE CỦA USER=== */}
         <Route path="/" element={<EventPage1 />} />
         <Route path="/tao-su-kien/buoc-2" element={<EventPage2 />} />
         <Route path="/tao-su-kien/buoc-3" element={<EventPage3 />} />
@@ -52,8 +55,30 @@ function App() {
         <Route element={<OrganizerLayout />}>
           <Route path="/dieu-khoan-BTC" element={<BtcTermsPage />} />
         </Route>
-
-      </Routes>
+      {/* === ROUTE CỦA ADMIN === */}
+        <Route 
+              path="/admin/danh-sach-su-kien" 
+              element={<MyEventsPage isAdmin={true} />} 
+        />
+        <Route path="/admin/duyet-su-kien/:eventId" element={<EventPage1 isAdmin={true} />} />
+        <Route path="/admin/duyet-su-kien/:eventId/buoc-2" element={<EventPage2 isAdmin={true} />} />
+        <Route path="/admin/duyet-su-kien/:eventId/buoc-3" element={<EventPage3 isAdmin={true} />} />
+        <Route path="/admin/duyet-su-kien/:eventId/buoc-4" element={<EventPage4 isAdmin={true} />} />
+        
+        <Route path="/admin/event-detail/:eventId" element={<EventDetailLayout isAdmin={true} />}>
+          <Route path="overview" element={<OverviewPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+        </Route>
+ 
+        <Route 
+              path="/admin/dashboard"
+              element={<DashBoard />}
+        />
+        <Route 
+            path="/admin/tai-khoan-cua-toi" 
+            element={<AdminProfilePage />} 
+        />
+        </Routes>
     </EventFormProvider>
   );
 }
