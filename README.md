@@ -4,12 +4,12 @@
 ## Overview (Tổng quan)
 Đây là dự án front-end cho một hệ thống quản lý sự kiện, tập trung vào nghiệp vụ của Nhà tổ chức sự kiện (Event Organizer).
 
-Mục tiêu của dự án là cung cấp một giao diện trực quan, cho phép các nhà tổ chức toàn quyền quản lý các sự kiện của mình, từ lúc khởi tạo, bán vé, tạo khuyến mãi, cho đến theo dõi hiệu quả kinh doanh.
-
-(Bạn có thể chèn ảnh chụp màn hình dự án của mình ở đây)
+Mục tiêu của dự án là cung cấp một giao diện trực quan, cho phép các nhà tổ chức toàn quyền quản lý các sự kiện của mình, từ lúc khởi tạo, bán vé, tạo khuyến mãi, cho đến theo dõi hiệu quả kinh doanh. Admin có thể xem xét duyệt hoặc hủy các sự kiện được tạo và xem báo cáo tổng quan về các sự kiện.
 
 ## Tính năng chính (Features)
 Dự án hiện thực các luồng nghiệp vụ chính sau:
+
+Đối với event organizer:
 
 Tạo sự kiện: Giao diện wizard (từng bước) để nhập thông tin, tạo vé, và cài đặt sự kiện.
 
@@ -32,6 +32,14 @@ Tạo voucher giảm giá mới.
 Xem danh sách các voucher đã tạo.
 
 Pháp lý: Xem và đồng ý với các Điều khoản của Ban tổ chức (BTC).
+
+Đối với admin:
+
+Xem thông tin chi tiết sự kiện 
+
+Duyệt hoặc hủy sự kiện
+
+Xem báo cáo tổng quan về các sự kiện trên hệ thống
 
 ## Công nghệ sử dụng 
 Framework: ReactJS (khởi tạo với Vite)
@@ -58,8 +66,11 @@ Lưu trữ tạm (Client): LocalStorage (Dùng để lưu dữ liệu khi tạo/
     |       react.svg
     +---context -- Chứa dữ liệu
     |       EventContext.jsx -- Localstorage lưu dữ liệu khi tạo
+    |       mockAdminInfo.js -- Data của admin
+    |       mockDashboard.js -- Data của Dashboard admin
     |       mockEventData.js -- Data của các sự kiện
     |       mockOrderData.js -- Data đơn đặt
+    |       mockOrganizerInfo.js -- Data (tên, avatar) của event organizer
     |       mockOverviewData.js -- Data tổng quan ( doanh thu, số vé bán,...)
     |       sample1.png
     |       sample2.png
@@ -75,6 +86,8 @@ Lưu trữ tạm (Client): LocalStorage (Dùng để lưu dữ liệu khi tạo/
     |   \---EventPage4
     |           EventPage4.jsx
     |           PaymentForm.jsx
+    +---dashboard
+    |       Dashboard.jsx -- Dashboard của Admin
     +---Elements
     +---eventorderpage -- Chi tiết sự kiện ( Tổng quan, Đơn hàng, Chỉnh sửa, Voucher)
     |       CreateVoucherPage.jsx
@@ -82,6 +95,10 @@ Lưu trữ tạm (Client): LocalStorage (Dùng để lưu dữ liệu khi tạo/
     |       OrdersPage.jsx
     |       OverviewPage.jsx
     |       VoucherPage.jsx
+    +---information
+    |       AdminHeader.jsx
+    |       AdminProfilePage.jsx
+    |       OrganizerHeader.jsx
     +---myEventsPage -- Sự kiện của tôi
     |       EventsPage.jsx
     |       ghibili.jpg
@@ -90,3 +107,12 @@ Lưu trữ tạm (Client): LocalStorage (Dùng để lưu dữ liệu khi tạo/
             BtcTermsPage.jsx
             OrganizerLayout.jsx
 ```
+
+## Haven't done
+
+- Gửi email
+
+- Tìm kiếm
+
+- Chuyển từ "sắp tới" thành "đã qua" cho các sự kiện
+
